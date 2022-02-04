@@ -10,6 +10,7 @@ class Model:
         self.RandomChoices = RandomChoices
 
 
+# Explore-Exploit using basic successor elimination algorithm
 class ExploreExploit:
     rewards_nd_counts: dict
 
@@ -30,22 +31,28 @@ class ExploreExploit:
         self.rewards_nd_counts[self.last_choice]['counts'] += 1
         self.rewards_nd_counts[self.last_choice]['rewards'].append(reward)
 
-    def USB(self, arm):
+    def avg_rewards(self, arm):
+        return sum(self.rewards_nd_counts[arm]['rewards'])/self.rewards_nd_counts[arm]['counts']
+
+    def sd_estimate(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
         rewards = self.rewards_nd_counts[arm]['rewards']
-        sum_rewards = sum(rewards)
-        v = sum_rewards / m
-        lmbda = lambda m: np.math.sqrt(8 * np.math.log(self.T) / m)
-        usb = v + lmbda(m)
+        estimated_mean = self.avg_rewards(arm)
+        return np.math.sqrt((1 / (m - 1)) * sum([(reward - estimated_mean) ** 2 for reward in rewards]))
+
+    def confidence_scale(self, m):
+        return np.math.sqrt(8 * np.math.log(self.T) / m)
+
+    def usb(self, arm):
+        m = self.rewards_nd_counts[arm]['counts']
+        v = self.avg_rewards(arm=arm)
+        usb = v + self.confidence_scale(m)
         return usb
 
-    def LSB(self, arm):
+    def lsb(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
-        rewards = self.rewards_nd_counts[arm]['rewards']
-        sum_rewards = sum(rewards)
-        v = sum_rewards / m
-        lmbda = lambda m: np.math.sqrt(8 * np.math.log(self.T) / m)
-        lsb = v - lmbda(m)
+        v = self.avg_rewards(arm=arm)
+        lsb = v - self.confidence_scale(m)
         return lsb
 
     def choice(self):
@@ -58,7 +65,7 @@ class ExploreExploit:
                 for arm_j in self.playing_arms.copy():
                     if arm_i == arm_j:
                         continue
-                    if self.USB(arm_j) < self.LSB(arm_i):
+                    if self.usb(arm_j) < self.lsb(arm_i):
                         self.playing_arms.remove(arm_j)
                         # print(f'{self.player_name}: [arm {arm_j} removed!]')
             self.not_played = self.playing_arms.copy()
@@ -75,15 +82,10 @@ class ExploreExploit:
         return choice
 
 
-class RandomChoices:  # arbitrary
+# random model
+class RandomChoices(ExploreExploit):  # arbitrary
     def __init__(self, arms, rounds, player_name, alpha=0) -> None:
-        self.arms = arms
-        self.K = len(arms)
-        self.T = rounds
-        self.time_choice_reward = dict()  # {round: (choice, reward)}
-        self.round = 0
-        self.alpha = alpha
-        self.last_choice = None
+        super().__init__(arms, rounds, player_name, alpha=0)
 
     def choice(self):
         self.round += 1
@@ -91,65 +93,40 @@ class RandomChoices:  # arbitrary
         self.last_choice = choice
         return choice
 
-    def update_reward(self, reward):
-        self.time_choice_reward[round] = (self.last_choice, reward)
 
-
+# Explore-Exploit successive elimination with standard error == 1 of the mean estimation
 class ExploreExploit2(ExploreExploit):
     def __init__(self, arms, rounds, player_name, alpha=0):
         super().__init__(arms, rounds, player_name, alpha)
 
-    def USB(self, arm):
+    def usb(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
-        rewards = self.rewards_nd_counts[arm]['rewards']
-        sum_rewards = sum(self.rewards_nd_counts[arm]['rewards'])
-        estimated_mean = sum_rewards / m
-        estimated_var = (1 / (m - 1)) * sum([(reward - estimated_mean) ** 2 for reward in rewards])
-        estimated_sd = np.math.sqrt(estimated_var)
-        # v = sum([1 if (reward - estimated_mean)/estimated_sd>0 else 0 for reward in rewards])/m
-        lmbda = lambda m: np.math.sqrt(8 * np.math.log(self.T) / m)
-        v = estimated_mean
-        usb = v / estimated_sd + lmbda(m)
+        v = self.avg_rewards(arm=arm)
+        sd = self.sd_estimate(arm=arm)
+        usb = v/sd + self.confidence_scale(m)
         return usb
 
-    def LSB(self, arm):
+    def lsb(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
-        rewards = self.rewards_nd_counts[arm]['rewards']
-        sum_rewards = sum(self.rewards_nd_counts[arm]['rewards'])
-        estimated_mean = sum_rewards / m
-        estimated_var = (1 / (m - 1)) * sum([(reward - estimated_mean) ** 2 for reward in rewards])
-        estimated_sd = np.math.sqrt(estimated_var)
-        # v = sum([1 if (reward - estimated_mean)/estimated_sd>0 else 0 for reward in rewards])/m
-        lmbda = lambda m: np.math.sqrt(8 * np.math.log(self.T) / m)
-        v = estimated_mean
-        lsb = v / estimated_sd - lmbda(m)
+        v = self.avg_rewards(arm=arm)
+        sd = self.sd_estimate(arm=arm)
+        lsb = v/sd - self.confidence_scale(m)
         return lsb
 
 
+# Explore-Exploit successive elimination with refined mean for normal distributed rewards
 class ExploreExploit3(ExploreExploit):
     def __init__(self, arms, rounds, player_name, alpha=0):
         super().__init__(arms, rounds, player_name, alpha)
 
-    def USB(self, arm):
+    def usb(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
-        rewards = self.rewards_nd_counts[arm]['rewards']
-        sum_rewards = sum(self.rewards_nd_counts[arm]['rewards'])
-        estimated_mean = sum_rewards / m
-        estimated_var = (1 / (m - 1)) * sum([(reward - estimated_mean) ** 2 for reward in rewards])
-        estimated_sd = np.math.sqrt(estimated_var)
-        lmbda = lambda m: np.math.sqrt(8 * np.math.log(self.T) / m)
-        v = estimated_mean
-        usb = v*np.math.sqrt(m) + lmbda(m)
+        v = self.avg_rewards(arm=arm)
+        usb = v*np.math.sqrt(m) + self.confidence_scale(m)
         return usb
 
-    def LSB(self, arm):
+    def lsb(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
-        rewards = self.rewards_nd_counts[arm]['rewards']
-        sum_rewards = sum(self.rewards_nd_counts[arm]['rewards'])
-        estimated_mean = sum_rewards / m
-        estimated_var = (1 / (m - 1)) * sum([(reward - estimated_mean) ** 2 for reward in rewards])
-        estimated_sd = np.math.sqrt(estimated_var)
-        lmbda = lambda m: np.math.sqrt(8 * np.math.log(self.T) / m)
-        v = estimated_mean
-        lsb = v*np.math.sqrt(m) - lmbda(m)
+        v = self.avg_rewards(arm=arm)
+        lsb = v*np.math.sqrt(m) - self.confidence_scale(m)
         return lsb
