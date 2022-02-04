@@ -68,7 +68,6 @@ def play_game(game, players, rounds):
     max_score_index = [i for i, score in enumerate(players_scores) if score == max(players_scores.copy())][0]
     winner = players[max_score_index].name
     print(f'Game Ended. {winner} Won!')
-    # results(arms_selections, game.exps, arms)
     return winner, arms_selections
 
 
