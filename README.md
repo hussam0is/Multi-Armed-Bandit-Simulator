@@ -1,5 +1,5 @@
 # arm_bandits_simulator
-A simulation for arm bandits game using Successive Elimination algorithm.
+A simulation for arm bandits game using **Successive Elimination** algorithm.
 
 one game results:
 
