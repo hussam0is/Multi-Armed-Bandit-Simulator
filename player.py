@@ -1,5 +1,5 @@
 class Player:
-    def __init__(self, name, model, arms, rounds, alpha=0) -> None:
+    def __init__(self, name, model, arms, rounds, alpha=1) -> None:
         self.rewards = []
         self.arms = arms
         self.Model = model(arms, rounds, name, alpha)

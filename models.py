@@ -103,14 +103,14 @@ class ExploreExploit2(ExploreExploit):
         m = self.rewards_nd_counts[arm]['counts']
         v = self.avg_rewards(arm=arm)
         sd = self.sd_estimate(arm=arm)
-        usb = v/sd + self.confidence_scale(m)
+        usb = v*np.math.sqrt(m) + self.confidence_scale(m)
         return usb
 
     def lsb(self, arm):
         m = self.rewards_nd_counts[arm]['counts']
         v = self.avg_rewards(arm=arm)
         sd = self.sd_estimate(arm=arm)
-        lsb = v/sd - self.confidence_scale(m)
+        lsb = v*np.math.sqrt(m) - self.confidence_scale(m)
         return lsb
 
 

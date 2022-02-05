@@ -32,7 +32,7 @@ def results(arms_selections, expectations, arms):
         for j, v in enumerate(arms_selections[player]):
             max_arm = ''
             if clrs[j] == 'r':
-                max_arm = str(j+1)+'-'
+                max_arm = '('+str(j+1)+')'
             ax.text(j - 0.3 + 1, v + 0.25, max_arm + str(v), color=clrs[j], fontweight='bold', fontsize=6)
         plt.xticks(arms, [str(arm) + ':' + str(e) for e, arm in zip(expectations, arms)], color='orange', rotation=45,
                    fontweight='bold', fontsize='6', horizontalalignment='right')
@@ -71,35 +71,18 @@ def play_game(game, players, rounds):
     return winner, arms_selections
 
 
-def game_simulation(simulations=500):
+def game_simulation(game, players_names, models, simulations):
     # Game parameters
-    rounds = 100
-    expectations1 = [20,19,17,10,10,20]
-    expectations2 = [10, 10, 5, 15, 5, 5, 5, 15, 10, 20, 5, 5, 5, 20, 5, 5, 1, 20, 1, 1, 1, 20,20,1,1]
-    expectations = expectations1
-    window = 3  # game will pick a random arm at window distance of the player's desired arm
-    stds = [2] * len(expectations)
-    arms = [i + 1 for i in range(len(expectations))]
-    g = Game(exps=expectations, stds=stds, window=window)
-    # Players
-    player1 = Player(name='Hussam', arms=arms, model=Model().ExploreExploit, rounds=rounds, alpha=1)
-    player2 = Player(name='Nimer', arms=arms, model=Model().ExploreExploit2, rounds=rounds, alpha=1)
-    player3 = Player(name='Othman', arms=arms, model=Model().ExploreExploit3, rounds=rounds, alpha=1)
-    player_4_rand = Player(name='Random', arms=arms, model=Model().RandomChoices, rounds=rounds)
-    players = [player1, player2, player3, player_4_rand]
-    # Simulation
-    wins = {player.name: 0 for player in players}
+    arms = [i + 1 for i in range(len(game.exps))]
     for i in range(simulations):
-        winner, arms_selections = play_game(g, players, rounds)
         print(f'----------------------------({i + 1})-------------------------------------')
+        players = [Player(name=player, arms=arms, rounds=game.rounds, model=models[i], alpha=1) for i, player in enumerate(players_names)]
+        if i == 0:
+            wins = {player.name: 0 for player in players}
+        winner, arms_selections = play_game(game, players, rounds)
         wins[winner] += 1
-        player1 = Player(name='Hussam', arms=arms, model=Model().ExploreExploit, rounds=rounds, alpha=1)
-        player2 = Player(name='Nimer', arms=arms, model=Model().ExploreExploit2, rounds=rounds, alpha=1)
-        player3 = Player(name='Othman', arms=arms, model=Model().ExploreExploit3, rounds=rounds, alpha=1)
-        player_4_rand = Player(name='Random', arms=arms, model=Model().RandomChoices, rounds=rounds)
-        players = [player1, player2, player3, player_4_rand]
-
-    results(arms_selections, expectations, arms)  # game results plot of the latest game played
+        if i == simulations-1:
+            results(arms_selections, expectations, arms)  # game results plot of the latest game played
     # simulation results plot
     plt.bar(np.arange(len(players)), wins.values())
     plt.title('Simulation Results')
@@ -115,5 +98,24 @@ def game_simulation(simulations=500):
 
 
 if __name__ == '__main__':
+    simulation_rounds = 10000
     # Game
-    game_simulation()
+    rounds = 500
+    expectations1 = [20,19,17,10,10,20]
+    expectations2 = [10, 10, 5, 15, 5, 5, 5, 15, 10, 20, 5, 5, 5, 20, 5, 5, 1, 20, 1, 1, 1, 20,20,1,1]
+    expectations = expectations2
+    window = 3  # game will pick a random arm at window distance of the player's desired arm
+    stds = [2] * len(expectations)
+    arms = [i + 1 for i in range(len(expectations))]
+    g = Game(exps=expectations, stds=stds, window=window)
+
+    # players & models
+    # player1 = Player(name='Hussam', arms=arms, model=Model().ExploreExploit, rounds=rounds, alpha=1)
+    # player2 = Player(name='Nimer', arms=arms, model=Model().ExploreExploit2, rounds=rounds, alpha=1)
+    # player3 = Player(name='Othman', arms=arms, model=Model().ExploreExploit3, rounds=rounds, alpha=1)
+    # player_4_rand = Player(name='Random', arms=arms, model=Model().RandomChoices, rounds=rounds)
+    players_names = ['Hussam', 'Nimer', 'Othman', 'Random']
+    models = [Model().ExploreExploit, Model().ExploreExploit2, Model().ExploreExploit3, Model().RandomChoices]
+
+    # simulation
+    game_simulation(game=g, players_names=players_names, models=models, simulations=simulation_rounds)

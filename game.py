@@ -3,7 +3,7 @@ import random
 
 
 class Game:
-    def __init__(self, exps=None, stds=None, window=0) -> None:
+    def __init__(self, exps=None, stds=None, rounds=100, window=0) -> None:
         if exps is None or stds is None:
             if exps is None:
                 print(f'error: argument exps not found!')
@@ -13,6 +13,7 @@ class Game:
         self.exps = exps
         self.stds = stds
         self.window = window
+        self.rounds = rounds
 
     def play(self, choice):
         choice -= 1  # get arm index
