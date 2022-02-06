@@ -2,7 +2,7 @@
 A simulation of Multi-arm bandit problem using **Successive Elimination** algorithm.
 Rewards for each arm are driven from noraml distributions.
 
-Input: 
+**Input: **
 1- expectations= -list of rewards expectations to assign for each arm reward-
 2- stds = -list of standard deviation to assign for each arm reward-
 
@@ -13,14 +13,16 @@ r(arm_i)~N(exps[i], stds[i])
 4- enter number of rounds
 5- enter number of games to play = simulation rounds
 
-Output:
+**Output:**
 winner = has the biggest ammount of cash
 Model ExploreExploite3 gets the best results.
 the model tries to identify arms with the highest rewards using successive elimination algorithm.
+
 the original probability of the follow inequality is: for each arm i and number of times m where arm i chosen we have P(|mu_m - mu*|< lambda_m)<1- 2/(T^4)
 here the rewards came from a bernollie distribution function. 
 to apply the equation on normal distribution, I calculated the modification needed for lambda_m, which is to multiply it by m^0.5 which got the best results in model ExploreExploite3. 
-for any issues yo may contact me at hussamk47@gamil.com 
+
+for any questions you may contact me at hussamk47@gamil.com 
 
 
 one game results:
