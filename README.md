@@ -22,7 +22,7 @@ the original probability of the follow inequality is: for each arm i and number 
 here the rewards came from a bernollie distribution function. 
 to apply the equation on normal distribution, I calculated the modification needed for lambda_m, which is to multiply it by m^0.5 which got the best results in model ExploreExploite3. 
 
-for any questions you may contact me at hussamk47@gamil.com 
+for any questions you may contact me at hussam.is@outlook.com
 
 
 one game results:
