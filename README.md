@@ -2,7 +2,7 @@
 A simulation of Multi-arm bandit problem using **Successive Elimination** algorithm.
 Rewards for each arm are driven from noraml distributions.
 
-**Input: **
+**Input:**
 1- expectations= -list of rewards expectations to assign for each arm reward-
 2- stds = -list of standard deviation to assign for each arm reward-
 
