@@ -12,11 +12,15 @@ we have:
 r(arm_i)~N(exps[i], stds[i])
 
 3- assign each player's required parameters
+
 4- enter number of rounds
+
 5- enter number of games to play = simulation rounds
 
 **Output:**
+
 winner = has the biggest ammount of cash
+
 Model ExploreExploite3 gets the best results.
 the model tries to identify arms with the highest rewards using successive elimination algorithm.
 
