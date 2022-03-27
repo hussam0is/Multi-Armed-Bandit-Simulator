@@ -9,7 +9,7 @@ Rewards for each arm are driven from normal distributions.
 2- stds = list of standard deviation to assign for each arm reward
 
 *we have:
-r(arm_i)~N(exps[i], stds[i])
+r(arm_i)~N(exps_i, stds_i)
 
 3- assign each player's required parameters
 
