@@ -1,5 +1,5 @@
-# arm_bandits_simulator
-A simulation of Multi-arm bandit problem using **Successive Elimination** algorithm.
+# Multi Armed Bandit
+A simulation of the Multi Armed bandit problem using **Successive Elimination** algorithm.
 Rewards for each arm are driven from normal distributions.
 
 **Input:**
