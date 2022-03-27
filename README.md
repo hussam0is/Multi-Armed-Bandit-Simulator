@@ -19,7 +19,7 @@ r(arm_i)~N(exps_i, stds_i)
 
 **Output:**
 
-winner = has the biggest ammount of cash
+Winner = has the biggest amount of rewards
 
 Model ExploreExploite3 gets the best results.
 the model tries to identify arms with the highest rewards using successive elimination algorithm.
