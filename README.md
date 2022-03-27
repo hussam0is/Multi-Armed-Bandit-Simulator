@@ -3,8 +3,9 @@ A simulation of Multi-arm bandit problem using **Successive Elimination** algori
 Rewards for each arm are driven from normal distributions.
 
 **Input:**
-1- expectations= -list of rewards expectations to assign for each arm reward-
-2- stds = -list of standard deviation to assign for each arm reward-
+1- expectations= list of rewards expectations to assign for each arm reward
+
+2- stds = list of standard deviation to assign for each arm reward
 
 we have:
 r(arm_i)~N(exps[i], stds[i])
