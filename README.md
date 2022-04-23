@@ -37,5 +37,5 @@ to apply the equation on normal distribution, I calculated the modification need
 
 ![alt text](https://github.com/hussam0is/arm_bandits_simulator/blob/main_br/simulation_results.png)
 
-for any questions you may contact me at hussam.is@outlook.com
+For any questions you may contact me at hussam.k47@gmail.com
 
